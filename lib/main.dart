@@ -74,7 +74,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void initData(bool isLoadMore, int offset, int limit) {
     pokemonService.getPokemonList(offset: offset, limit: limit).then((value) {
       maxData = value.count;
-      print(pokemons.length);
       if (isLoadMore) {
         pokemons.addAll(value.results);
       } else {
@@ -84,10 +83,10 @@ class _MyHomePageState extends State<MyHomePage> {
       if (availableLoadMore) {
         page += 1;
       }
-      isPullToRefresh = false;
-      isLoadMore = false;
-      setState(() {});
-      print(isLoadMore);
+      setState(() {
+        isPullToRefresh = false;
+        isLoadMore = false;
+      });
     });
   }
 
@@ -106,7 +105,9 @@ class _MyHomePageState extends State<MyHomePage> {
   void scrollHandler() {
     if (scrollController.offset >= scrollController.position.maxScrollExtent &&
         availableLoadMore) {
-      isLoadMore = true;
+      setState(() {
+        isLoadMore = true;
+      });
       var offset = (page - 1) * limit;
       initData(isLoadMore, offset, limit);
     }
