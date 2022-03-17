@@ -56,7 +56,6 @@ class _MyHomePageState extends State<MyHomePage> {
   List<PokemonListResponseResult> pokemons = [];
   int maxData = 0;
   bool availableLoadMore = false;
-  bool isPullToRefresh = false;
   bool isLoadMore = false;
   int page = 1;
   int limit = 20;
@@ -83,10 +82,8 @@ class _MyHomePageState extends State<MyHomePage> {
       if (availableLoadMore) {
         page += 1;
       }
-      setState(() {
-        isPullToRefresh = false;
-        isLoadMore = false;
-      });
+      isLoadMore = false;
+      setState(() {});
     });
   }
 
@@ -94,8 +91,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> refreshData() async {
     setState(() {
+      isLoadMore = false;
       page = 1;
-      isPullToRefresh = true;
     });
     initData(false, 0, limit);
   }
@@ -105,9 +102,8 @@ class _MyHomePageState extends State<MyHomePage> {
   void scrollHandler() {
     if (scrollController.offset >= scrollController.position.maxScrollExtent &&
         availableLoadMore) {
-      setState(() {
-        isLoadMore = true;
-      });
+      isLoadMore = true;
+      setState(() {});
       var offset = (page - 1) * limit;
       initData(isLoadMore, offset, limit);
     }
