@@ -90,10 +90,9 @@ class _MyHomePageState extends State<MyHomePage> {
   // Pull to refresh handler
 
   Future<void> refreshData() async {
-    setState(() {
-      isLoadMore = false;
-      page = 1;
-    });
+    isLoadMore = false;
+    page = 1;
+    setState(() {});
     initData(false, 0, limit);
   }
 
@@ -101,7 +100,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void scrollHandler() {
     if (scrollController.offset >= scrollController.position.maxScrollExtent &&
-        availableLoadMore) {
+        availableLoadMore &&
+        !isLoadMore) {
       isLoadMore = true;
       setState(() {});
       var offset = (page - 1) * limit;
