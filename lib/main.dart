@@ -64,27 +64,8 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    refreshData();
     scrollController.addListener(scrollHandler);
-    initData(false, 0, limit);
-  }
-
-  // First load handler
-
-  void initData(bool isLoadMore, int offset, int limit) {
-    pokemonService.getPokemonList(offset: offset, limit: limit).then((value) {
-      maxData = value.count;
-      if (isLoadMore) {
-        pokemons.addAll(value.results);
-      } else {
-        pokemons = value.results;
-      }
-      availableLoadMore = (page * limit) < maxData;
-      if (availableLoadMore) {
-        page += 1;
-      }
-      isLoadMore = false;
-      setState(() {});
-    });
   }
 
   // Pull to refresh handler
@@ -92,20 +73,31 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> refreshData() async {
     isLoadMore = false;
     page = 1;
+    var offset = page - 1;
+    var data =
+        await pokemonService.getPokemonList(offset: offset, limit: limit);
+    maxData = data.count;
+    pokemons = data.results;
+    availableLoadMore = (page * limit) < maxData;
+    page++;
+    isLoadMore = false;
     setState(() {});
-    initData(false, 0, limit);
   }
 
-  // Load more handler
-
   void scrollHandler() {
-    if (scrollController.offset >= scrollController.position.maxScrollExtent &&
+    if (scrollController.position.pixels >=
+            scrollController.position.maxScrollExtent &&
         availableLoadMore &&
         !isLoadMore) {
       isLoadMore = true;
-      setState(() {});
       var offset = (page - 1) * limit;
-      initData(isLoadMore, offset, limit);
+      pokemonService.getPokemonList(offset: offset, limit: limit).then((value) {
+        pokemons.addAll(value.results);
+        availableLoadMore = (page * limit) < maxData;
+        page++;
+        isLoadMore = false;
+        setState(() {});
+      });
     }
   }
 
@@ -137,6 +129,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 fit: BoxFit.cover,
               ),
               title: Text(pokemon.name.capitalize()),
+              onTap: () {
+                print(Text(pokemon.name.capitalize()));
+              },
             );
           },
           separatorBuilder: (context, index) => Divider(),
