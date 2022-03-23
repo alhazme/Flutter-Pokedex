@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pokedex/extensions/string_extensions.dart';
+import 'package:pokedex/screens/detail_page_arguments.dart';
 import 'package:pokedex/services/pokemon_services.dart';
 import 'package:pokedex/models/pokemon_list_response.dart';
+import 'package:pokedex/screens/detail_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -28,6 +30,9 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.red,
       ),
       home: const MyHomePage(title: 'Pokedex'),
+      routes: {
+        DetailPokemonPage.routeName: (context) => const DetailPokemonPage(),
+      },
     );
   }
 }
@@ -130,7 +135,13 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               title: Text(pokemon.name.capitalize()),
               onTap: () {
-                print(Text(pokemon.name.capitalize()));
+                String pokemonId = pokemon.url.getPokemonId();
+                String pokemonName = pokemon.name.capitalize();
+                Navigator.pushNamed(
+                  context,
+                  DetailPokemonPage.routeName,
+                  arguments: DetailPageArguments(pokemonId, pokemonName),
+                );
               },
             );
           },

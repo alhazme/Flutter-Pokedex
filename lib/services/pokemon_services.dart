@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:http/http.dart' as http;
 
 import 'package:pokedex/models/pokemon_list_response.dart';
+import 'package:pokedex/models/pokemon_detail_response.dart';
 
 class PokemonService {
   final String baseURL = "pokeapi.co";
@@ -23,7 +24,7 @@ class PokemonService {
           PokemonListResponse.fromJson(convert.jsonDecode(response.body));
       return pokemonListResponse;
     } else {
-      throw "Unable to retrieve posts.";
+      throw "Unable to retrieve pokemon list.";
     }
   }
 
@@ -31,5 +32,19 @@ class PokemonService {
     return "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/" +
         id +
         ".png";
+  }
+
+  Future<PokemonDetailResponse> getPokemonDetail(
+      {String pokemonId = ""}) async {
+    var url = Uri.https(baseURL, getBaseEndpoint('/pokemon/$pokemonId'));
+    print(url.toString());
+    var response = await http.get(url);
+    if (response.statusCode == 200) {
+      var pokemonDetailResponse =
+          PokemonDetailResponse.fromJson(convert.jsonDecode(response.body));
+      return pokemonDetailResponse;
+    } else {
+      throw "Unable to retrieve pokemon detail.";
+    }
   }
 }
